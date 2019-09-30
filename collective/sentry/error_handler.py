@@ -20,7 +20,7 @@ if not sentry_dsn:
     raise RuntimeError("Environment variable SENTRY_DSN not configured")
 
 sentry_project = os.environ.get("SENTRY_PROJECT")
-
+sentry_environment = os.environ.get("SENTRY_ENVIRONMENT")
 
 def _before_send(event, hint):
     """ Inject Plone/Zope specific information (based on raven.contrib.zope)  """
@@ -97,7 +97,8 @@ def before_send(event, hint):
         logging.warn("Could not extract data from request", exc_info=True)
 
 
-sentry_sdk.init(sentry_dsn, max_breadcrumbs=50, before_send=before_send, debug=False)
+sentry_sdk.init(sentry_dsn, environment=sentry_environment,
+                max_breadcrumbs=50, before_send=before_send, debug=False)
 
 configuration = getConfiguration()
 tags = {}

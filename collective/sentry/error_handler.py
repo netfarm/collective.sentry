@@ -100,9 +100,12 @@ def before_send(event, hint):
 sentry_sdk.init(sentry_dsn, environment=sentry_environment,
                 max_breadcrumbs=50, before_send=before_send, debug=False)
 
-configuration = getConfiguration()
 tags = {}
-tags['instance_name'] = configuration.instancehome.rsplit(os.path.sep, 1)[-1]
+instancehome = getConfiguration().instancehome.split(os.path.sep)
+if len(instancehome) >= 3 and (instancehome[-2] == 'parts'):
+    tags['instance_name'] = instancehome[-3]
+elif len(instancehome):
+    tags['instance_name'] = instancehome[-1]
 
 with sentry_sdk.configure_scope() as scope:
     for k, v in tags.items():
